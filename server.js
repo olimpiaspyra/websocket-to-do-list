@@ -1,13 +1,20 @@
 const express = require('express');
+const cors = require('cors');
 const socket = require('socket.io');
 
 const app = express();
+app.use(cors());
 
 const server = app.listen(process.env.PORT || 8000, () => {
   console.log('Server is running on port: 8000');
 });
 
-const io = socket(server);
+const io = socket(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"]
+  }
+});
 
 const tasks = [];
 
@@ -30,5 +37,5 @@ io.on('connection', (socket) => {
 });
 
 app.use((req, res) => {
-  res.status(404).json({ message: 'Not found...' });
+  res.status(404).send({ message: 'Not found...' });
 });
